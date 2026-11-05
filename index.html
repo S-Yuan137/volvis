@@ -57,15 +57,15 @@
         </div>
       </a>
       <a class="model" href="2890cluster3Core.html">
-        <img class="preview" src="assets/2890-preview.webp" width="640" height="400" alt="2890 · Cluster 3 volume rendering preview" decoding="async">
+        <img class="preview" src="assets/2890-preview.webp" width="640" height="400" alt="Core volume rendering preview" decoding="async">
         <div class="model-body">
-          <h2>2890 · Cluster 3</h2>
-          <p class="details">Core volume data<br>45.8 MiB</p>
+          <h2>Core</h2>
+          <p class="details">Volume data<br>45.8 MiB</p>
           <span class="open">Open viewer <span aria-hidden="true">→</span></span>
         </div>
       </a>
     </nav>
-    <p class="note"><span>Drag to rotate. Scroll to zoom.</span><br><span>These are large datasets; the first load may take a little time.</span></p>
+    <p class="note"><span>Drag to rotate. Scroll to zoom.</span><br><span>Controls start hidden. Press H or select Show controls to reveal them.</span><br><span>These are large datasets; the first load may take a little time.</span></p>
     <footer class="project">
       <h2>More to come</h2>
       <p>The source code for this advanced interactive rendering tool will be released in the future. Star this repository or follow me on GitHub for updates.</p>
@@ -88,8 +88,11 @@
     'Core volume data': 'Core 体积数据',
     'Open viewer': '打开模型',
     'Clump volume rendering preview': 'Clump 体积渲染预览',
-    '2890 · Cluster 3 volume rendering preview': '2890 · Cluster 3 体积渲染预览',
+    'Core volume rendering preview': 'Core 体积渲染预览',
     'Drag to rotate. Scroll to zoom.': '拖动鼠标旋转，滚轮缩放。',
+    'Controls start hidden. Press H or select Show controls to reveal them.': '查看器默认隐藏控件，按 H 或点击“显示控件”即可展开。',
+    'Show controls (H)': '显示控件（H）',
+    'Hide controls (H)': '隐藏控件（H）',
     'These are large datasets; the first load may take a little time.': '数据文件较大，首次加载需要一些时间，请稍候。',
     'More to come': '更多内容即将公开',
     'The source code for this advanced interactive rendering tool will be released in the future. Star this repository or follow me on GitHub for updates.': '这套高级交互渲染工具的源码将在之后公开。欢迎为本仓库点 Star，或关注我的 GitHub，获取后续更新。',
@@ -215,6 +218,12 @@
   }).sort((a, b) => b[0].length - a[0].length);
   const roots = [...document.querySelectorAll('[data-localize], #info, #opacityEditor, #fieldControl, #diagnostics, #scalarBar, #fieldScalarBar, #playbackControl')];
   const buttons = [...document.querySelectorAll('[data-language-toggle]')];
+  document.querySelectorAll('[data-controls-toggle]').forEach(button => {
+    button.addEventListener('click', () => {
+      document.body.classList.toggle('controls-hidden', button.dataset.controlsToggle === 'hide');
+      document.body.focus({ preventScroll: true });
+    });
+  });
   const originalTitle = document.title;
   const description = document.querySelector('meta[name="description"]');
   const originalDescription = description?.content;

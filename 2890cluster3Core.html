@@ -7,7 +7,7 @@
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>2890 · Cluster 3 · Interactive volume rendering</title>
+  <title>Core · Interactive volume rendering</title>
   <style>
     :root { color-scheme: dark; }
     body { margin: 0; overflow: hidden; background: #080a10; }
@@ -132,18 +132,24 @@
       #fieldControl { left: 8px; top: 8px; }
     }
 
-    #galleryLink, #projectLink, #languageToggle {
+    #galleryLink, #projectLink, #languageToggle, #hideControls {
       display: inline-flex; align-items: center; min-height: 26px; padding: 3px 8px;
       border: 1px solid #ffffff2c; border-radius: 5px; background: #1a2130;
       color: #d9e8ff; font: inherit; text-decoration: none; cursor: pointer;
     }
-    #galleryLink:focus-visible, #projectLink:focus-visible, #languageToggle:focus-visible {
+    #galleryLink:focus-visible, #projectLink:focus-visible, #languageToggle:focus-visible, #hideControls:focus-visible, #showControls:focus-visible {
       outline: 2px solid #83b6ef; outline-offset: 3px;
     }
     #opacityReset { white-space: nowrap; flex-shrink: 0; }
+    #showControls {
+      display: none; position: fixed; z-index: 5; right: 14px; bottom: 14px;
+      border: 1px solid #ffffff2c; border-radius: 6px; padding: 7px 11px;
+      background: #10141ddd; color: #d9e8ff; font: 12px/1.4 system-ui, sans-serif; cursor: pointer;
+    }
+    body.controls-hidden #showControls { display: block; }
   </style>
 </head>
-<body tabindex="-1">
+<body class="controls-hidden" tabindex="-1">
 <div id="info">
   drag · scroll · <b>space</b> pause · <b>−/+</b> speed · <b>1/2/3</b> axis views · <b>0</b> spin · <b>R</b> reset<br>
   <b>F</b> field · <b>S</b> seeds · <b>B/K</b> canvas/core bounds · <b>O</b> opacity · <b>H</b> hide controls · <b>V</b> VR<br>
@@ -197,6 +203,7 @@
   <div class="panelBody">
     <div id="presentationControl">
       <a id="galleryLink" href="index.html">Gallery</a>
+      <button id="hideControls" data-controls-toggle="hide" type="button">Hide controls (H)</button>
       <button id="languageToggle" data-language-toggle type="button" aria-label="切换至中文">中文</button>
       <a id="projectLink" href="https://github.com/S-Yuan137/volvis" target="_blank" rel="noopener noreferrer">Star on GitHub</a>
       <button id="presentationMode" type="button" aria-pressed="false" title="Toggle side-by-side binocular viewing (keyboard: V).">VR mode: off</button>
@@ -220,6 +227,7 @@
     </div>
   </div>
 </details>
+<button id="showControls" data-controls-toggle="show" data-localize type="button" aria-controls="info opacityEditor fieldControl diagnostics playbackControl">Show controls (H)</button>
 <video id="vid" muted playsinline crossorigin="anonymous" style="display:none"></video>
 
 <script>
@@ -3752,8 +3760,11 @@ main().catch(error => {
     'Core volume data': 'Core 体积数据',
     'Open viewer': '打开模型',
     'Clump volume rendering preview': 'Clump 体积渲染预览',
-    '2890 · Cluster 3 volume rendering preview': '2890 · Cluster 3 体积渲染预览',
+    'Core volume rendering preview': 'Core 体积渲染预览',
     'Drag to rotate. Scroll to zoom.': '拖动鼠标旋转，滚轮缩放。',
+    'Controls start hidden. Press H or select Show controls to reveal them.': '查看器默认隐藏控件，按 H 或点击“显示控件”即可展开。',
+    'Show controls (H)': '显示控件（H）',
+    'Hide controls (H)': '隐藏控件（H）',
     'These are large datasets; the first load may take a little time.': '数据文件较大，首次加载需要一些时间，请稍候。',
     'More to come': '更多内容即将公开',
     'The source code for this advanced interactive rendering tool will be released in the future. Star this repository or follow me on GitHub for updates.': '这套高级交互渲染工具的源码将在之后公开。欢迎为本仓库点 Star，或关注我的 GitHub，获取后续更新。',
@@ -3879,6 +3890,12 @@ main().catch(error => {
   }).sort((a, b) => b[0].length - a[0].length);
   const roots = [...document.querySelectorAll('[data-localize], #info, #opacityEditor, #fieldControl, #diagnostics, #scalarBar, #fieldScalarBar, #playbackControl')];
   const buttons = [...document.querySelectorAll('[data-language-toggle]')];
+  document.querySelectorAll('[data-controls-toggle]').forEach(button => {
+    button.addEventListener('click', () => {
+      document.body.classList.toggle('controls-hidden', button.dataset.controlsToggle === 'hide');
+      document.body.focus({ preventScroll: true });
+    });
+  });
   const originalTitle = document.title;
   const description = document.querySelector('meta[name="description"]');
   const originalDescription = description?.content;
