@@ -131,6 +131,16 @@
       #opacityCurve { width: 228px; }
       #fieldControl { left: 8px; top: 8px; }
     }
+
+    #galleryLink, #projectLink, #languageToggle {
+      display: inline-flex; align-items: center; min-height: 26px; padding: 3px 8px;
+      border: 1px solid #ffffff2c; border-radius: 5px; background: #1a2130;
+      color: #d9e8ff; font: inherit; text-decoration: none; cursor: pointer;
+    }
+    #galleryLink:focus-visible, #projectLink:focus-visible, #languageToggle:focus-visible {
+      outline: 2px solid #83b6ef; outline-offset: 3px;
+    }
+    #opacityReset { white-space: nowrap; flex-shrink: 0; }
   </style>
 </head>
 <body tabindex="-1">
@@ -186,6 +196,9 @@
   <summary>playback</summary>
   <div class="panelBody">
     <div id="presentationControl">
+      <a id="galleryLink" href="index.html">Gallery</a>
+      <button id="languageToggle" data-language-toggle type="button" aria-label="切换至中文">中文</button>
+      <a id="projectLink" href="https://github.com/S-Yuan137/volvis" target="_blank" rel="noopener noreferrer">Star on GitHub</a>
       <button id="presentationMode" type="button" aria-pressed="false" title="Toggle side-by-side binocular viewing (keyboard: V).">VR mode: off</button>
       <label id="stereoDepthControl" hidden title="Eye separation as a percentage of the fitted viewing distance; zero removes binocular disparity."><span>depth</span><input id="stereoDepth" type="range" min="0" max="8" step="0.25" value="3" aria-label="Stereo depth"><output id="stereoDepthValue" for="stereoDepth">3%</output></label>
       <button id="fullscreenButton" type="button" title="In VR, fullscreen hides overlays. Press Escape to return to the controls.">fullscreen</button>
@@ -693,6 +706,8 @@ function opacityCanvasPoint(event) {
   ];
 }
 
+window.addEventListener('volvis-languagechange', () => drawOpacityEditor());
+
 function drawOpacityEditor() {
   const context = opacityCanvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
@@ -726,11 +741,12 @@ function drawOpacityEditor() {
   context.textAlign = 'right';
   context.fillText('1', plot.left + plot.width, plot.top + plot.height + 12);
   context.textAlign = 'center';
-  context.fillText(densityAxisLabel, plot.left + plot.width / 2, plot.top + plot.height + 12);
+  const chineseLabels = document.documentElement.lang.startsWith('zh');
+  context.fillText(chineseLabels ? (densityAxisLabel === 'log density' ? '对数密度' : '密度') : densityAxisLabel, plot.left + plot.width / 2, plot.top + plot.height + 12);
   context.save();
   context.translate(9, plot.top + plot.height / 2);
   context.rotate(-Math.PI / 2);
-  context.fillText('opacity α', 0, 0);
+  context.fillText(document.documentElement.lang.startsWith('zh') ? '不透明度 α' : 'opacity α', 0, 0);
   context.restore();
   context.strokeStyle = '#75d7ff';
   context.lineWidth = 2;
@@ -3760,5 +3776,248 @@ main().catch(error => {
   status.textContent = `⚠ ${error.message}${fileHint}`;
 });
 </script>
+<!-- volvis-language:start -->
+<script>
+(() => {
+  'use strict';
+  const storageKey = 'volvis.language';
+  const translations = {
+    'Interactive volume rendering': '交互式体积渲染',
+    'Choose a dataset to explore and rotate its 3D volume in your browser.': '选择一个数据集，在浏览器中查看与旋转三维体积。',
+    'Choose a volume dataset': '选择体积数据集',
+    'Volume data': '体积数据',
+    'Core volume data': 'Core 体积数据',
+    'Open viewer': '打开模型',
+    'Clump volume rendering preview': 'Clump 体积渲染预览',
+    '2890 · Cluster 3 volume rendering preview': '2890 · Cluster 3 体积渲染预览',
+    'Drag to rotate. Scroll to zoom.': '拖动鼠标旋转，滚轮缩放。',
+    'These are large datasets; the first load may take a little time.': '数据文件较大，首次加载需要一些时间，请稍候。',
+    'More to come': '更多内容即将公开',
+    'The source code for this advanced interactive rendering tool will be released in the future. Star this repository or follow me on GitHub for updates.': '这套高级交互渲染工具的源码将在之后公开。欢迎为本仓库点 Star，或关注我的 GitHub，获取后续更新。',
+    'Star this repo': '为仓库点 Star',
+    'Follow @S-Yuan137': '关注 @S-Yuan137',
+    'Gallery': '模型列表',
+    'Star on GitHub': 'GitHub · Star',
+    'drag · scroll ·': '拖动旋转 · 滚轮缩放 ·',
+    'space': '空格',
+    'pause ·': '暂停 ·',
+    'speed ·': '速度 ·',
+    'axis views ·': '坐标轴视角 ·',
+    'spin ·': '自动旋转 ·',
+    'reset': '重置',
+    'field ·': '磁场 ·',
+    'seeds ·': '种子点 ·',
+    'canvas/clump bounds ·': '画布/团块边界 ·',
+    'opacity ·': '不透明度 ·',
+    'hide controls ·': '隐藏控件 ·',
+    'Opacity controls': '不透明度控制',
+    'opacity': '不透明度',
+    'opacity curve': '不透明度曲线',
+    'Opacity preset': '不透明度预设',
+    'PyVista sigmoid_3 · diffuse': 'PyVista sigmoid_3 · 柔和',
+    'PyVista sigmoid_5 · balanced': 'PyVista sigmoid_5 · 均衡',
+    'PyVista sigmoid · contrast': 'PyVista sigmoid · 高对比',
+    'onion shells': '洋葱壳层',
+    'custom · saved': '自定义 · 已保存',
+    'Drag points; double-click to add; right-click an interior point to remove.': '拖动控制点；双击添加；右键点击内部控制点删除。',
+    'density → optical opacity': '密度 → 光学不透明度',
+    'density colormap': '密度色图',
+    'gray': '灰度',
+    'export config': '导出显示设置',
+    'import config': '导入显示设置',
+    'Magnetic field controls': '磁场控制',
+    'magnetic field and bounds': '磁场与边界',
+    'B-field streamlines · z-up': '磁场流线 · Z 轴向上',
+    'seed points': '种子点',
+    'B colormap': '磁场色图',
+    'canvas3d evolution AABB': '演化区域包围盒',
+    'current clump AABB': '当前团块包围盒',
+    'Unit vector from the world origin (0, 0, 0) toward the camera.': '从世界坐标原点 (0, 0, 0) 指向相机的单位向量。',
+    'LOS vector': '视线向量',
+    'Decode and rendering measurements for troubleshooting.': '用于排查问题的视频解码与渲染性能数据。',
+    'diagnostics': '性能信息',
+    'measuring render FPS…': '正在测量渲染帧率…',
+    'density colour scale': '密度色标',
+    'magnetic field colour scale': '磁场色标',
+    'density · code units': '密度 · 模拟单位',
+    '|B| · code units': '|B| · 模拟单位',
+    'Animation playback controls': '动画播放控制',
+    'playback': '播放控制',
+    'Toggle side-by-side binocular viewing (keyboard: V).': '切换并排双目观看模式（快捷键 V）。',
+    'VR mode: off': 'VR 模式：关闭',
+    'VR mode: on': 'VR 模式：开启',
+    'Eye separation as a percentage of the fitted viewing distance; zero removes binocular disparity.': '双眼间距占适配观看距离的百分比；设为零时消除双目视差。',
+    'depth': '景深',
+    'Stereo depth': '立体景深',
+    'In VR, fullscreen hides overlays. Press Escape to return to the controls.': 'VR 全屏时隐藏界面；按 Escape 返回控件。',
+    'fullscreen': '全屏',
+    'evolution view': '演化视图',
+    'Evolution view': '演化视图',
+    'clump evolution': '团块演化',
+    'progenitor + core': '前身区域 + 核心',
+    'core only': '仅核心',
+    'Animation frame': '动画帧',
+    'Displayed speed; 1× equals the former displayed 0.75× speed. Keyboard −/+ changes one 0.25× step.': '显示播放速度；1× 对应旧版的 0.75×。快捷键 −/+ 每次调整 0.25×。',
+    'speed': '速度',
+    'Decrease playback speed': '降低播放速度',
+    'Playback speed': '播放速度',
+    'Increase playback speed': '提高播放速度',
+    'loading volume_config.json…': '正在加载体积数据…',
+    'loading viewer configuration…': '正在加载查看器设置…',
+    'loading video…': '正在加载体积视频…',
+    'configuration exported · saved locally': '显示设置已导出 · 已保存到本地',
+    'configuration imported · reloading viewer…': '显示设置已导入 · 正在重新加载…',
+    'click volume or press space to start': '点击体积或按空格开始播放',
+    'unknown media error': '未知视频错误',
+    'video loading was aborted': '视频加载已中止',
+    'network error while loading video': '视频加载时发生网络错误',
+    'browser could not decode this video': '浏览器无法解码此视频',
+    'video format or codec is not supported': '不支持此视频格式或编码',
+    'viewer script failed during startup': '查看器脚本启动失败'
+  };
+  const fragments = Object.entries({
+    'Interactive volume rendering': '交互式体积渲染',
+    'onion shells · equal log-density spacing': '洋葱壳层 · 等对数密度间距',
+    'outside common 8K decode envelope': '超出常见 8K 解码范围',
+    'VR · two eyes, shared atlas': 'VR · 双目共享纹理图集',
+    'could not load viewer module:': '无法加载查看器模块：',
+    'could not import configuration:': '无法导入显示设置：',
+    'Fullscreen unavailable:': '无法使用全屏：',
+    'playback did not start:': '无法开始播放：',
+    'viewer startup promise was rejected': '查看器启动失败',
+    'video download stalled': '视频下载暂时停滞',
+    'switching segment': '正在切换片段',
+    'buffering video': '正在缓冲视频',
+    'video drops n/a': '视频丢帧率：暂无数据',
+    'video drops ': '视频丢帧率 ',
+    'single view': '单目视图',
+    'samples/voxel': '采样/体素',
+    'fixed canvas ': '固定画布 ',
+    'ROI cap ': 'ROI 上限 ',
+    'saved locally': '已保存到本地',
+    'max α ': '最大 α ',
+    'custom': '自定义',
+    'display ': '显示 ',
+    'atlas ': '图集 ',
+    'MP/frame': '百万像素/帧',
+    'ray ': '射线 ',
+    'frame ': '帧 ',
+    'global ': '全局帧 ',
+    'snap ': '快照 ',
+    'clump evolution': '团块演化',
+    'progenitor + core': '前身区域 + 核心',
+    'core only': '仅核心',
+    'paused': '已暂停',
+    'pause': '暂停',
+    'playing': '播放中',
+    'ready': '就绪',
+    'scrubbing': '正在定位',
+    'seeking': '正在跳转'
+  }).sort((a, b) => b[0].length - a[0].length);
+  const roots = [...document.querySelectorAll('[data-localize], #info, #opacityEditor, #fieldControl, #diagnostics, #scalarBar, #fieldScalarBar, #playbackControl')];
+  const buttons = [...document.querySelectorAll('[data-language-toggle]')];
+  const originalTitle = document.title;
+  const description = document.querySelector('meta[name="description"]');
+  const originalDescription = description?.content;
+  const textSources = new WeakMap();
+  const attributeSources = new WeakMap();
+  const browserLanguage = (navigator.language || 'en').toLowerCase().startsWith('zh') ? 'zh' : 'en';
+  let language = browserLanguage;
+  try {
+    const saved = localStorage.getItem(storageKey);
+    if (saved === 'zh' || saved === 'en') language = saved;
+  } catch { /* Language switching also works when storage is unavailable. */ }
+
+  function translate(source) {
+    if (language === 'en') return source;
+    const trimmed = source.trim();
+    if (Object.prototype.hasOwnProperty.call(translations, trimmed)) {
+      return source.replace(trimmed, translations[trimmed]);
+    }
+    return fragments.reduce((text, [english, chinese]) => text.split(english).join(chinese), source);
+  }
+
+  function translateText(node) {
+    if (node.parentElement?.closest('script, style, [data-language-toggle]')) return;
+    const current = node.nodeValue;
+    const saved = textSources.get(node);
+    const source = saved?.rendered === current ? saved.source : current;
+    const rendered = translate(source);
+    textSources.set(node, { source, rendered });
+    if (rendered !== current) node.nodeValue = rendered;
+  }
+
+  function translateAttributes(element) {
+    if (element.matches('[data-language-toggle]')) return;
+    let saved = attributeSources.get(element);
+    if (!saved) { saved = new Map(); attributeSources.set(element, saved); }
+    for (const name of ['title', 'aria-label', 'alt']) {
+      if (!element.hasAttribute(name)) continue;
+      const current = element.getAttribute(name);
+      const previous = saved.get(name);
+      const source = previous?.rendered === current ? previous.source : current;
+      const rendered = translate(source);
+      saved.set(name, { source, rendered });
+      if (rendered !== current) element.setAttribute(name, rendered);
+    }
+  }
+
+  function visit(root) {
+    if (root.nodeType === Node.TEXT_NODE) { translateText(root); return; }
+    if (root.nodeType !== Node.ELEMENT_NODE || root.matches('script, style')) return;
+    translateAttributes(root);
+    root.querySelectorAll('[title], [aria-label], [alt]').forEach(translateAttributes);
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) translateText(walker.currentNode);
+  }
+
+  function observe() {
+    for (const root of roots) observer.observe(root, {
+      childList: true, subtree: true, characterData: true,
+      attributes: true, attributeFilter: ['title', 'aria-label', 'alt']
+    });
+  }
+
+  const observer = new MutationObserver(records => {
+    observer.disconnect();
+    const changed = new Set();
+    for (const record of records) {
+      if (record.type === 'childList') record.addedNodes.forEach(node => changed.add(node));
+      else changed.add(record.target);
+    }
+    changed.forEach(visit);
+    observe();
+  });
+
+  function renderLanguage() {
+    observer.disconnect();
+    document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
+    document.title = translate(originalTitle);
+    if (description) description.content = translate(originalDescription);
+    roots.forEach(visit);
+    for (const button of buttons) {
+      button.textContent = language === 'zh' ? 'English' : '中文';
+      button.lang = language === 'zh' ? 'en' : 'zh-CN';
+      button.setAttribute('aria-label', language === 'zh' ? 'Switch to English' : '切换至中文');
+    }
+    observe();
+    window.dispatchEvent(new Event('volvis-languagechange'));
+  }
+
+  for (const button of buttons) button.addEventListener('click', () => {
+    language = language === 'zh' ? 'en' : 'zh';
+    try { localStorage.setItem(storageKey, language); } catch { /* Optional preference. */ }
+    renderLanguage();
+  });
+  window.addEventListener('storage', event => {
+    if (event.key === storageKey && (event.newValue === 'zh' || event.newValue === 'en')) {
+      language = event.newValue;
+      renderLanguage();
+    }
+  });
+  renderLanguage();
+})();
+</script>
+<!-- volvis-language:end -->
 </body>
 </html>
